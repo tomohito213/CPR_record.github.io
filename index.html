@@ -230,12 +230,7 @@ function downloadLog(){
   }catch(e){}
   __saveTextWithUTF8BOM(fname, text);
 }
-);
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = ("CPR_"+(patientId?patientId+"_":"")+"_"+new Date().toISOString().replace(/[-:T]/g,"").slice(0,12)+".txt");
-      a.click();
-    }
+
 
     function formatTimer(sec) {
       const m = String(Math.floor(sec / 60)).padStart(2, '0');
