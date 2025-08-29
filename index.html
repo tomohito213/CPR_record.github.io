@@ -217,8 +217,20 @@ button { touch-action: manipulation; }
 
 
 
-    function downloadLog() {
-      const blob = new Blob([logBox.value], { type: "text/plain" });
+    
+function downloadLog(){
+  var el = document.getElementById('log');
+  var text = el ? el.value : "";
+  var fname = "CPR_record.txt";
+  try{
+    if (typeof patientId !== 'undefined' && patientId){
+      var stamp = new Date().toISOString().replace(/[-:T]/g,"").slice(0,12);
+      fname = "CPR_" + patientId + "_" + stamp + ".txt";
+    }
+  }catch(e){}
+  __saveTextWithUTF8BOM(fname, text);
+}
+);
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
       a.download = ("CPR_"+(patientId?patientId+"_":"")+"_"+new Date().toISOString().replace(/[-:T]/g,"").slice(0,12)+".txt");
@@ -329,6 +341,26 @@ function openPatientIdPad(){
   // 既存文字を選択して上書きしやすく
   try { el.setSelectionRange(0, el.value.length); } catch(e){}
 }
+
+
+function __saveTextWithUTF8BOM(filename, rawText){
+  // Normalize newlines to CRLF to reduce mojibake in some viewers
+  var text = String(rawText || "").replace(/\r?\n/g, "\r\n");
+  // Prepend BOM for iOS/Windows viewers
+  var bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
+  var blob = new Blob([bom, text], {type: "text/plain;charset=utf-8"});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement("a");
+  a.href = url;
+  a.download = filename || "CPR_record.txt";
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(function(){
+    try{ URL.revokeObjectURL(url); }catch(e){}
+    try{ document.body.removeChild(a); }catch(e){}
+  }, 1500);
+}
+
 </script>
 </body>
 </html>
